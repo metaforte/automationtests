@@ -6,16 +6,17 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+
+import static com.ib.automationtests.in.gov.telangana.transport.SiteConstants.pageNames.HOMEPAGE;
+import static com.ib.automationtests.in.gov.telangana.transport.SiteConstants.pageNames.NONE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -30,6 +31,8 @@ public class TransportDepartmentTests {
 	private static final Logger logger = LogManager.getLogger(TransportDepartmentTests.class);
     private static WebDriver driver ;
 
+	private static pageNames currentPage = NONE ;
+
 	@BeforeAll
 	public static void initDriver() {
 		logger.info("-----------------------Instantiating Driver-----------------------");
@@ -41,41 +44,62 @@ public class TransportDepartmentTests {
 
 	private void openHomePage() {
 		logger.info("-----------------------------------------------------");
+		// logger.info(this.hashCode());
+		// logger.info(this.currentPage);
 		logger.info("Opening page '{}'", BaseURL);
 		driver.get(BaseURL);
+		currentPage = HOMEPAGE;
 		logger.info("Page Opened '{}'", BaseURL);
+		logger.info("-----------------------------------------------------");
 	}
 
 	@Test
 	@Order(1)
 	void validateTitle()  {
-		openHomePage();
+
+		logger.info("Begin of test 1: "+System.nanoTime());
+		// Step 1: Open the website.
+		// Note: Below two lines are equivalent
+		// driver.get(BaseURL);
+		if(!currentPage.equals(HOMEPAGE)) openHomePage();
+
+		// Step 2: Get the title of the website from the browser
 		String title = driver.getTitle();
 		logger.info("Page title = '{}'", title);
+
+		// Step 3: Check the title is matching the expected title
 		assertThat(title).isEqualTo(HomePageTitle);
+		logger.info("End of test 1: "+System.nanoTime());
 	}
 
 	@Test
 	@Order(2)
 	void validateWelcomeSplashAndClose() {
-		//  Uncomment the below if running only one test.
-		// openHomePage();
+		logger.info("Begin of test 2: "+System.nanoTime());
+		if(!currentPage.equals(HOMEPAGE)) openHomePage();
 
-		// Here, we need to wait for the welcome pop up to appear and then close it
-		// Wait for the welcome splash to load. Wait for a maximum of 10 seconds`
-		WebDriverWait wait= new WebDriverWait(driver, Duration.ofSeconds(10));
-		ExpectedCondition<WebElement> welcomeMessageIsVisible = elementToBeClickable(By.id("welcomemsg"));
-		WebElement welcomeSplash = wait.until(welcomeMessageIsVisible);
-
+		// Step 4: Find welcome splash. (Wait until it appears as it is loading slow)
+		WebElement welcomeSplash = waitAndFindBy(By.id("welcomemsg"),driver,10);
 		assertThat(welcomeSplash).isNotNull();
 
+		//Step 5: Find the close icon on it
 		// Locate close Icon
 		WebElement closeButton = welcomeSplash.findElement(By.className("mfpcclose"));
 		assertThat(closeButton).isNotNull();
 
-		// Click the close icon
-		closeButton.click();
 
+		// Step 6: Click the close icon
+		closeButton.click();
+		logger.info("End of test 2: "+System.nanoTime());
+
+	}
+
+	// Utility method to implement waited find
+	public static WebElement waitAndFindBy(By by, WebDriver driver, int waitTime) {
+		WebDriverWait wait= new WebDriverWait(driver, Duration.ofSeconds(waitTime));
+		ExpectedCondition<WebElement> welcomeMessageIsVisible = elementToBeClickable(by);
+		WebElement element = wait.until(welcomeMessageIsVisible);
+		return element;
 	}
 
 
@@ -85,4 +109,5 @@ public class TransportDepartmentTests {
 		driver.close();
 		driver.quit();
 	}
+
 }

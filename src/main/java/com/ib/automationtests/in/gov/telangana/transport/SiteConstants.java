@@ -6,4 +6,10 @@ public class SiteConstants {
     public static String HomePageTitle = "TRANSPORT DEPARTMENT GOVERNMENT OF TELANGANA - INDIA";
 
     public static String WelcomeSplash = "welcomemsg";
+
+
+    public enum pageNames {
+        NONE,
+        HOMEPAGE
+    }
 }
