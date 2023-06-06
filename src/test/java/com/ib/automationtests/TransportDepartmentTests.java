@@ -25,7 +25,7 @@ import static com.ib.automationtests.in.gov.telangana.transport.SiteConstants.*;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 
 @SpringBootTest
-class TransportDepartmentTests {
+public class TransportDepartmentTests {
 	
 	private static final Logger logger = LogManager.getLogger(TransportDepartmentTests.class);
     private static WebDriver driver ;
