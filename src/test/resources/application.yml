@@ -1,0 +1,4 @@
+logging:
+  level:
+    io.netty.util: INFO
+    org.springframework: INFO
